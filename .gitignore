@@ -8,3 +8,5 @@
 /pkg/
 /spec/reports/
 /tmp/
+execute_gem.rb
+run_tests.sh

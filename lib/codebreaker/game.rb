@@ -1,0 +1,30 @@
+module Codebreaker
+  class Game
+    def initialize
+      @secret_code = (1..4).map { rand(1..6) }.join
+      puts "Secret code: #{@secret_code}"
+    end
+
+    def check_attempt(guess_code)
+      result = ''
+      pluses_count = intersection_with_index_length(guess_code, @secret_code)
+      coincidences_count = intersection_without_index_length(guess_code, @secret_code)
+      result += '+' * pluses_count
+      result += '-' * (coincidences_count - pluses_count)
+    end
+
+    private
+
+    def intersection_with_index_length(stg1, stg2)
+      stg1.split(//).zip(stg2.split(//)).select { |x, y| x == y }.map(&:first).length
+    end
+
+    def intersection_without_index_length(stg1, stg2)
+      stg2.split(//).inject(0) do |sum, char|
+        sum += 1 if stg1.sub!(char,'')
+        sum
+      end
+    end
+
+  end
+end
