@@ -1,7 +1,10 @@
 module Codebreaker
   class Game
+    ATTEMPTS_AMOUNT = 5.freeze
     def initialize
       @secret_code = (1..4).map { rand(1..6) }.join
+      @can_take_hint = true
+      @attempts_amount = ATTEMPTS_AMOUNT
       puts "Secret code: #{@secret_code}"
     end
 
@@ -13,10 +16,29 @@ module Codebreaker
       result += '-' * (coincidences_count - pluses_count)
     end
 
+    def hint_available?
+      @can_take_hint
+    end
+
+    def take_hint
+      if hint_available?
+        @can_take_hint = false
+        @secret_code[0]
+      end
+    end
+
+    def attempt_available?
+      !@attempts_amount.zero?
+    end
+
+    def use_attempt
+      @attempts_amount -= 1 if attempt_available?
+    end
+
     private
 
     def intersection_with_index_length(stg1, stg2)
-      stg1.split(//).zip(stg2.split(//)).select { |x, y| x == y }.map(&:first).length
+      stg1.split(//).zip(stg2.split(//)).select { |x, y| x == y }.length
     end
 
     def intersection_without_index_length(stg1, stg2)
