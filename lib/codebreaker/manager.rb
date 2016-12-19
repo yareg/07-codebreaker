@@ -3,14 +3,15 @@ module Codebreaker
     def initialize
       @user_menu = Menu.new
       process_choice @user_menu.main_menu
+      @data_manipulator = DataManipulator.new
     end
 
     def process_choice(choice)
       case choice
       when Menu::NEW_GAME
         start_game
-      when Menu::SAVE_EXIT
-        puts 'We\'re going to save and exit the game!'
+      when Menu::LOAD_SAVED
+        load_saved_games
       when Menu::QUIT
         quit
       else
@@ -54,6 +55,7 @@ module Codebreaker
         puts '++++++++++++++++++++++'
         puts '| Congrats! You win! |'
         puts '++++++++++++++++++++++'
+        @current_game.game_win
         process_choice @user_menu.main_menu
       end
     end
@@ -63,7 +65,8 @@ module Codebreaker
       puts '++++++++++++++'
       puts '| Game over! |'
       puts '++++++++++++++'
-      process_choice @user_menu.main_menu
+      @current_game.game_lost
+      process_save_request
     end
 
     def take_hint
@@ -71,6 +74,36 @@ module Codebreaker
         puts "First number: #{@current_game.take_hint}"
       else
         puts 'You\'ve already taken a hint!'
+      end
+    end
+
+    def process_save_request
+      if Menu::SAVE_GAME == @user_menu.save_game_menu
+        DataManipulator.new.add_game(@user_menu.get_player_name, @current_game.game_win?, @current_game.attempts_used, !@current_game.hint_available?)
+      end
+      process_choice @user_menu.main_menu
+    end
+
+    def load_saved_games
+      display_saved_games DataManipulator.new.return_all_data
+      process_choice @user_menu.main_menu
+    end
+
+    # def load_data_manipulator
+    #   @data_manipulator = DataManipulator.new unless defined? @data_manipulator
+    # end
+
+    def display_saved_games(games)
+      if games.length.zero?
+        puts 'There are no data for display'
+      else
+        puts ' -------------------------------------------------------------------------------'
+        puts "| User name \t| Game status \t| Attempts \t| Hint \t| Date \t\t\t|"
+        puts ' -------------------------------------------------------------------------------'
+        games.each do |game|
+          puts "| #{game[:user_name]}\t| #{game[:game_status]}\t\t| #{game[:attempts_count]}\t\t| #{game[:hint]}\t| #{game[:date]}\t|"
+        end
+        puts ' -------------------------------------------------------------------------------'
       end
     end
   end

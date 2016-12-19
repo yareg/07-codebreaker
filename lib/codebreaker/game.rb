@@ -35,6 +35,22 @@ module Codebreaker
       @attempts_amount -= 1 if attempt_available?
     end
 
+    def attempts_used
+      ATTEMPTS_AMOUNT - @attempts_amount
+    end
+
+    def game_win
+      @game_win = true
+    end
+
+    def game_win?
+      @game_win
+    end
+
+    def game_lost
+      @game_win = false
+    end
+
     private
 
     def intersection_with_index_length(stg1, stg2)
