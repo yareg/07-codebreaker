@@ -5,7 +5,6 @@ module Codebreaker
       @secret_code = (1..4).map { rand(1..6) }.join
       @can_take_hint = true
       @attempts_amount = ATTEMPTS_AMOUNT
-      puts "Secret code: #{@secret_code}"
     end
 
     def check_attempt(guess_code)
