@@ -21,7 +21,7 @@ module Codebreaker
         puts '====================================='
         print 'Make your choice: '
 
-        user_choise = read_char
+        user_choise = gets.chomp
 
         if menu_items.key?(user_choise)
           user_choise_label = menu_items[user_choise]
@@ -58,26 +58,10 @@ module Codebreaker
 
     def get_player_name
       print 'Enter your name: '
-      gets.chomp.downcase
+      gets.chomp
     end
 
     private
-
-    def read_char
-      STDIN.echo = false
-      STDIN.raw!
-
-      input = STDIN.getc.chr
-      if input == "\e" then
-        input << STDIN.read_nonblock(3) rescue nil
-        input << STDIN.read_nonblock(2) rescue nil
-      end
-    ensure
-      STDIN.echo = true
-      STDIN.cooked!
-
-      return input
-    end
 
     def format_item(item)
       item.to_s.capitalize.gsub('_', ' ')
