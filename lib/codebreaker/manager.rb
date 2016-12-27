@@ -1,21 +1,79 @@
 module Codebreaker
   class Manager
-    def initialize
-      @user_menu = Menu.new
-      process_choice @user_menu.main_menu
+    NEW_GAME = 1
+    LOAD_SAVED = 2
+    QUIT = 3
+    SAVE_GAME = 4
+    DO_NOT_SAVE_GAME = 5
+
+    def begin
+      process_choice main_menu
     end
 
     def process_choice(choice)
       case choice
-      when Menu::NEW_GAME
+      when NEW_GAME
         start_game
-      when Menu::LOAD_SAVED
+      when LOAD_SAVED
         load_saved_games
-      when Menu::QUIT
+      when QUIT
         quit
       else
         raise 'Selected wrong choice!'
       end
+    end
+
+    def main_menu
+      menu_items = {
+          '1' => :new_game,
+          '2' => :load_saved_results,
+          '3' => :quit,
+      }
+
+      while true
+        puts '====================================='
+        menu_items.each{ |key, value| puts "#{key} => #{format_item(value)}" }
+        puts '====================================='
+        print 'Make your choice: '
+
+        user_choise = gets.chomp
+
+        if menu_items.key?(user_choise)
+          user_choise_label = menu_items[user_choise]
+          puts format_item(user_choise_label)
+
+          case user_choise_label
+            when :new_game
+              return NEW_GAME
+            when :load_saved_results
+              return LOAD_SAVED
+            when :quit
+              return QUIT
+          end
+        else
+          puts "\n" + 'Please, enter correct value'
+        end
+      end
+    end
+
+    def save_game_menu
+      puts 'Do you want to save game results? (yes/no)'
+      while true
+        user_data = gets.chomp.downcase
+        if 'yes' == user_data
+          puts 'your data is saved'
+          return SAVE_GAME
+        elsif 'no' == user_data
+          return DO_NOT_SAVE_GAME
+        else
+          puts 'Enter \'yes\' or \'no\''
+        end
+      end
+    end
+
+    def get_player_name
+      print 'Enter your name: '
+      gets.chomp
     end
 
     private
@@ -65,7 +123,7 @@ module Codebreaker
       puts '| Game over! |'
       puts '++++++++++++++'
       @current_game.game_lost
-      process_choice @user_menu.main_menu
+      process_choice main_menu
     end
 
     def take_hint
@@ -77,15 +135,15 @@ module Codebreaker
     end
 
     def process_save_request
-      if Menu::SAVE_GAME == @user_menu.save_game_menu
-        load_data_manipulator.add_game(@user_menu.get_player_name, @current_game.game_win?, @current_game.attempts_used, !@current_game.hint_available?)
+      if SAVE_GAME == save_game_menu
+        load_data_manipulator.add_game(get_player_name, @current_game.game_win?, @current_game.attempts_used, !@current_game.hint_available?)
       end
-      process_choice @user_menu.main_menu
+      process_choice main_menu
     end
 
     def load_saved_games
       display_saved_games load_data_manipulator.return_all_data
-      process_choice @user_menu.main_menu
+      process_choice main_menu
     end
 
     def load_data_manipulator
@@ -111,6 +169,10 @@ module Codebreaker
 
     def make_separator_line(col_size, col_count)
       ' ' + ('-' * ((col_size * col_count) + (col_count - 1))) + ' '
+    end
+
+    def format_item(item)
+      item.to_s.capitalize.gsub('_', ' ')
     end
   end
 end
