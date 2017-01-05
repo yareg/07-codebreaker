@@ -6,6 +6,8 @@ module Codebreaker
     SAVE_GAME = 4
     DO_NOT_SAVE_GAME = 5
 
+    attr_accessor :current_game
+
     def begin
       process_choice main_menu
     end
@@ -81,7 +83,7 @@ module Codebreaker
     def start_game
       puts 'New game has been started!'
       puts 'You should enter number between 1111 and 6666, "h" for help, or "q" for exit'
-      @current_game = Game.new
+      init_game
       while @current_game.attempt_available?
         print 'Your answer: '
         answer = gets.chomp.downcase
@@ -90,9 +92,8 @@ module Codebreaker
           take_hint
         when 'q'
           quit
-        when /^[1-6]{4}$/
-          @current_game.use_attempt
-          try_guess answer
+        when correct_answer_pattern
+          process_answer answer
         else
           puts 'Incorrect answer!'
         end
@@ -102,6 +103,20 @@ module Codebreaker
 
     def quit
       abort 'Bye'
+    end
+
+    def correct_answer_pattern
+      /^[1-6]{4}$/
+    end
+
+    def init_game
+      @current_game = Game.new
+    end	    
+
+    def process_answer(answer)
+      p @current_game
+      @current_game.use_attempt
+      try_guess answer
     end
 
     def try_guess(answer)
