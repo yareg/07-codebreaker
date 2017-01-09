@@ -1,5 +1,7 @@
 module Codebreaker
   class Game
+
+    attr_reader :secret_code, :attempts_amount
     ATTEMPTS_AMOUNT = 5.freeze
     def initialize
       @secret_code = (1..4).map { rand(1..6) }.join
